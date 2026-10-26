@@ -1,0 +1,227 @@
+{
+ "_note": "과거 검증용 코호트. 시작 = 가계금융복지조사(2012-2017) 가구주 연령대별 경상소득·순자산·자산, 끝 = 10년 뒤 한 연령대 위의 실제 순자산(2017년 이후 표). 모든 금액은 ECOS 소비자물가로 2025년 가격 환산. 금융자산 비중은 2025년 부록 통계표 8 값을 모든 해에 적용. 저축률은 가계동향조사 근로자가구 소득 5분위별 흑자액÷경상소득(2019~2024)을 소득에 따라 보간. 자가 비율 = 그 해 가계금융 자기집 비율 × 2024 연령별 상대 소유율(주택소유통계÷등록센서스). 서울 자가 비율 = 2015 주택소유통계 서울 소유 가구 ÷ 전국 소유 가구(연령별), 모든 출발 연도에 적용.",
+ "cohorts": [
+  {
+   "startYear": 2012,
+   "endYear": 2022,
+   "group": "30~39",
+   "endGroup": "40~49",
+   "startAge": 30,
+   "income": {
+    "mean": 5844,
+    "median": 5080
+   },
+   "netWorth": {
+    "mean": 23295,
+    "median": 15812
+   },
+   "leverage": 1.2402,
+   "finShare": 0.3922,
+   "actualEnd": {
+    "mean": 50785,
+    "median": 31911
+   },
+   "ownShare": 0.3589,
+   "seoulShareOfOwners": 0.1705
+  },
+  {
+   "startYear": 2012,
+   "endYear": 2022,
+   "group": "40~49",
+   "endGroup": "50~59",
+   "startAge": 40,
+   "income": {
+    "mean": 6788,
+    "median": 5487
+   },
+   "netWorth": {
+    "mean": 34876,
+    "median": 21145
+   },
+   "leverage": 1.245,
+   "finShare": 0.2615,
+   "actualEnd": {
+    "mean": 57886,
+    "median": 34387
+   },
+   "ownShare": 0.617,
+   "seoulShareOfOwners": 0.1691
+  },
+  {
+   "startYear": 2013,
+   "endYear": 2023,
+   "group": "30~39",
+   "endGroup": "40~49",
+   "startAge": 30,
+   "income": {
+    "mean": 6019,
+    "median": 5165
+   },
+   "netWorth": {
+    "mean": 22248,
+    "median": 15980
+   },
+   "leverage": 1.2756,
+   "finShare": 0.3922,
+   "actualEnd": {
+    "mean": 45551,
+    "median": 28667
+   },
+   "ownShare": 0.3564,
+   "seoulShareOfOwners": 0.1705
+  },
+  {
+   "startYear": 2013,
+   "endYear": 2023,
+   "group": "40~49",
+   "endGroup": "50~59",
+   "startAge": 40,
+   "income": {
+    "mean": 6759,
+    "median": 5704
+   },
+   "netWorth": {
+    "mean": 32427,
+    "median": 21227
+   },
+   "leverage": 1.266,
+   "finShare": 0.2615,
+   "actualEnd": {
+    "mean": 51974,
+    "median": 31235
+   },
+   "ownShare": 0.6126,
+   "seoulShareOfOwners": 0.1691
+  },
+  {
+   "startYear": 2014,
+   "endYear": 2024,
+   "group": "30~39",
+   "endGroup": "40~49",
+   "startAge": 30,
+   "income": {
+    "mean": 6160,
+    "median": 5385
+   },
+   "netWorth": {
+    "mean": 22246,
+    "median": 16712
+   },
+   "leverage": 1.2925,
+   "finShare": 0.3922,
+   "actualEnd": {
+    "mean": 46023,
+    "median": 29650
+   },
+   "ownShare": 0.3659,
+   "seoulShareOfOwners": 0.1705
+  },
+  {
+   "startYear": 2014,
+   "endYear": 2024,
+   "group": "40~49",
+   "endGroup": "50~59",
+   "startAge": 40,
+   "income": {
+    "mean": 6840,
+    "median": 5933
+   },
+   "netWorth": {
+    "mean": 32380,
+    "median": 21751
+   },
+   "leverage": 1.2646,
+   "finShare": 0.2615,
+   "actualEnd": {
+    "mean": 52219,
+    "median": 31102
+   },
+   "ownShare": 0.629,
+   "seoulShareOfOwners": 0.1691
+  },
+  {
+   "startYear": 2015,
+   "endYear": 2025,
+   "group": "30~39",
+   "endGroup": "40~49",
+   "startAge": 30,
+   "income": {
+    "mean": 6239,
+    "median": 5532
+   },
+   "netWorth": {
+    "mean": 23611,
+    "median": 17366
+   },
+   "leverage": 1.2844,
+   "finShare": 0.3922,
+   "actualEnd": {
+    "mean": 48389,
+    "median": 28384
+   },
+   "ownShare": 0.3722,
+   "seoulShareOfOwners": 0.1705
+  },
+  {
+   "startYear": 2015,
+   "endYear": 2025,
+   "group": "40~49",
+   "endGroup": "50~59",
+   "startAge": 40,
+   "income": {
+    "mean": 6979,
+    "median": 5901
+   },
+   "netWorth": {
+    "mean": 32535,
+    "median": 22308
+   },
+   "leverage": 1.2705,
+   "finShare": 0.2615,
+   "actualEnd": {
+    "mean": 55161,
+    "median": 31685
+   },
+   "ownShare": 0.6398,
+   "seoulShareOfOwners": 0.1691
+  }
+ ],
+ "savingsByIncome": [
+  {
+   "income": 2399,
+   "rate": 0.086
+  },
+  {
+   "income": 4290,
+   "rate": 0.2054
+  },
+  {
+   "income": 6081,
+   "rate": 0.2184
+  },
+  {
+   "income": 8374,
+   "rate": 0.2473
+  },
+  {
+   "income": 14018,
+   "rate": 0.3295
+  }
+ ],
+ "incomeWealthRho": 0.6,
+ "regionCheck": {
+  "_source": "가계금융복지조사 지역별 자산·부채·소득 (DT_1HDBA01, DT_1HDAAA01), 전가구 평균 순자산(명목, 만원)",
+  "capital": {
+   "2015": 33111,
+   "2025": 58832
+  },
+  "nonCapital": {
+   "2015": 24148,
+   "2025": 35720
+  },
+  "capitalShareHouseholds": {
+   "2015": 47.8,
+   "2025": 49.4
+  }
+ }
+}

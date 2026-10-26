@@ -1,0 +1,20 @@
+# 의존성·빌드 결과
+node_modules/
+dist/
+*.tsbuildinfo
+
+# 로컬 환경 변수 (예시 파일 .env.example 은 올림)
+.env
+.env.*
+!.env.example
+
+# 개인 도구 설정
+.claude/settings.local.json
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# 운영체제
+.DS_Store
+Thumbs.db
+desktop.ini

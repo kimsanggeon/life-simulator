@@ -1,0 +1,7 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "life-sim", "runtimeExecutable": "npm", "runtimeArgs": ["--prefix", "app", "run", "dev", "--", "--port", "5173", "--strictPort"], "port": 5173 },
+    { "name": "life-sim-prod", "runtimeExecutable": "npm", "runtimeArgs": ["--prefix", "app", "run", "preview", "--", "--port", "4173", "--strictPort"], "port": 4173, "url": "http://lifesim.localhost:4173" }
+  ]
+}
