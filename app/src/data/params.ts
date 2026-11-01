@@ -135,6 +135,14 @@ function nwShape(group: string): NwShape {
   return shape;
 }
 
+/** netWorthPercentile의 역: 그 나이 가구 중 p분위(0~1)에 해당하는 순자산 (만원) */
+export function netWorthAtPercentile(age: number, p: number) {
+  const { anchors, alpha } = nwShape(nwGroup(age));
+  const p90 = anchors[8].v;
+  if (p > 0.9) return p90 * (0.1 / (1 - Math.min(p, 0.995))) ** (1 / alpha);
+  return valueFromAnchors(Math.max(p, 0.1), anchors);
+}
+
 export function netWorthPercentile(age: number, netWorth: number) {
   const g = nwGroup(age);
   const { anchors, alpha } = nwShape(g);

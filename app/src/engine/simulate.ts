@@ -225,6 +225,51 @@ export function simulatePath(
   return { netWorth: nw, income: inc, startupAlive: inBusiness, firstMarriage, firstChild, firstJobLoss, dual, yearIdx };
 }
 
+/**
+ * 1,000개 중 i번째 인생을 같은 시드로 다시 돌려 사건까지 기록한다.
+ * 같은 (person, scenario, opt, i)면 simulateScenario 안의 i번째 경로와 똑같은 인생이 나온다.
+ */
+export function storyForPath(person: Person, scenario: Scenario, params: ModelParams, opt: SimOptions, i: number, q = NaN): Story {
+  const { years, seed } = opt;
+  const useEvents = opt.events ?? true;
+  const economy: Economy = params.history ? (opt.economy ?? { mode: 'history' }) : { mode: 'normal' };
+  const log: LifeEvent[] = [];
+  const out = simulatePath(
+    person,
+    scenario,
+    params,
+    years,
+    createRng(streamSeed(seed, i, STREAM_MARKET)),
+    createRng(streamSeed(seed, i, STREAM_LIFE)),
+    createRng(streamSeed(seed, i, STREAM_CHOICE)),
+    createRng(streamSeed(seed, i, STREAM_EVENTS)),
+    useEvents,
+    economy,
+    log,
+  );
+  return {
+    q,
+    netWorth: Array.from(out.netWorth),
+    events: log,
+    econYears: out.yearIdx && params.history ? Array.from(out.yearIdx, (k) => params.history!.year[k]) : null,
+    startupAlive: out.startupAlive,
+  };
+}
+
+/** 101개 분위 요약에서 '값이 x 이상인 비율' (사이 지점은 직선 보간) */
+export function shareAtLeast(q101: number[], x: number): number {
+  if (x <= q101[0]) return 1;
+  if (x > q101[100]) return 0;
+  for (let k = 1; k <= 100; k++) {
+    if (x <= q101[k]) {
+      const span = q101[k] - q101[k - 1];
+      const f = span > 0 ? (x - q101[k - 1]) / span : 1;
+      return 1 - (k - 1 + f) / 100;
+    }
+  }
+  return 0;
+}
+
 function badYearLift(h: History, seqs: (Int32Array | undefined)[], finals: Float64Array) {
   const n = h.year.length;
   const cut = quantileSorted(Float64Array.from(finals).sort(), 0.1);
@@ -320,30 +365,7 @@ export function simulateScenario(
   // 대표 인생 3명과 100명의 나: 같은 시드로 그 경로만 다시 돌려 사건을 기록한다
   const order = Array.from(finalNetWorth, (v, i) => ({ v, i })).sort((a, b) => a.v - b.v);
   const hundred = Array.from({ length: 100 }, (_, k) => order[Math.min(runs - 1, Math.floor(((k + 0.5) / 100) * runs))].v);
-  const stories: Story[] = [0.1, 0.5, 0.9].map((q) => {
-    const i = order[Math.min(runs - 1, Math.floor(q * runs))].i;
-    const log: LifeEvent[] = [];
-    const out = simulatePath(
-      person,
-      scenario,
-      params,
-      years,
-      createRng(streamSeed(seed, i, STREAM_MARKET)),
-      createRng(streamSeed(seed, i, STREAM_LIFE)),
-      createRng(streamSeed(seed, i, STREAM_CHOICE)),
-      createRng(streamSeed(seed, i, STREAM_EVENTS)),
-      useEvents,
-      economy,
-      log,
-    );
-    return {
-      q,
-      netWorth: Array.from(out.netWorth),
-      events: log,
-      econYears: out.yearIdx && params.history ? Array.from(out.yearIdx, (k) => params.history!.year[k]) : null,
-      startupAlive: out.startupAlive,
-    };
-  });
+  const stories: Story[] = [0.1, 0.5, 0.9].map((q) => storyForPath(person, scenario, params, opt, order[Math.min(runs - 1, Math.floor(q * runs))].i, q));
 
   return {
     scenario,
@@ -352,6 +374,7 @@ export function simulateScenario(
     years: Array.from({ length: years + 1 }, (_, t) => t),
     ages: Array.from({ length: years + 1 }, (_, t) => person.age + t),
     netWorth: nwByYear.map((a) => band(a.sort())),
+    nwQuantiles: nwByYear.map((a) => Array.from({ length: 101 }, (_, k) => quantileSorted(a, k / 100))),
     income: incByYear.map((a) => band(a.sort())),
     finalNetWorth,
     startupAliveShare: scenario.kind === 'startup' ? alive / runs : undefined,

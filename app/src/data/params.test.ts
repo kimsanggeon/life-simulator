@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { allStats, buildParams, derived, history, incomePercentile, netWorthPercentile } from './params';
+import { allStats, buildParams, derived, history, incomePercentile, netWorthAtPercentile, netWorthPercentile } from './params';
 
 describe('stats.json', () => {
   it('모든 항목에 출처·기준연도·상태가 있다', () => {
@@ -171,5 +171,13 @@ describe('과거 경제 (ECOS 1996~2025)', () => {
   it('실직 배수: 2025 = 1, 1998 ≈ 2.5배 (실업률 6.95 ÷ 2.79)', () => {
     expect(history.jobLossMult[at(2025)]).toBeCloseTo(1, 6);
     expect(history.jobLossMult[at(1998)]).toBeCloseTo(6.95 / 2.792, 3);
+  });
+});
+
+describe('또래 상위 몇 %가 되려면 얼마?', () => {
+  it.each([35, 45, 55])('%i세: netWorthAtPercentile은 netWorthPercentile의 역함수', (age) => {
+    for (const p of [0.5, 0.8, 0.95]) {
+      expect(netWorthPercentile(age, netWorthAtPercentile(age, p)).p).toBeCloseTo(p, 3);
+    }
   });
 });

@@ -134,6 +134,8 @@ export type ScenarioResult = {
   stories?: Story[];
   /** 100명의 나: 마지막 순자산을 100등분한 값 (낮은 순) */
   hundred?: number[];
+  /** 해마다 순자산 분포를 0%·1%·…·100% 지점 101개로 요약 (목표 확률 계산용) */
+  nwQuantiles?: number[][];
 };
 
 /** events: 결혼·출산·실직 같은 인생 사건을 켤지 (끄면 소득·시장 운만 남는다) */

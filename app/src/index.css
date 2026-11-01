@@ -252,3 +252,54 @@ table.bt tr.oos td { background: color-mix(in srgb, var(--accent) 7%, transparen
 .sc-buttons .primary { background: var(--accent); color: #fff; }
 .sc-buttons .ghost { background: transparent; color: var(--accent); }
 @media (max-width: 620px) { .sc-body { grid-template-columns: 1fr; } }
+
+/* ── ① 내 목표, 이룰 확률은? ── */
+.goal, .replay { margin: 26px 0; border-top: 1px solid var(--line); padding-top: 18px; }
+.goal h3, .replay h3 { font-size: 18px; margin: 0 0 10px; }
+.goal-pick { display: flex; flex-direction: column; gap: 10px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.chips button { font: inherit; font-size: 14px; padding: 7px 14px; border-radius: 999px; cursor: pointer; border: 1px solid var(--line); background: var(--bg); color: var(--ink); }
+.chips button.on { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700; }
+.chips .custom { display: flex; align-items: center; gap: 4px; font-size: 14px; color: var(--mute); }
+.chips .custom input { width: 72px; font: inherit; font-size: 14px; padding: 6px 8px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); }
+.goal-age { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--mute); }
+.goal-age b { color: var(--ink); }
+.goal-age input { accent-color: var(--accent); }
+.goal-result { display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: center; margin: 16px 0 6px; padding: 16px; border-radius: 14px; background: var(--bg); border: 1px solid var(--line); }
+.goal-big { display: flex; flex-direction: column; gap: 6px; }
+.goal-big > b { font-size: clamp(44px, 10vw, 60px); line-height: 1; color: var(--accent); font-weight: 800; }
+.goal-big span { font-size: 15px; }
+.goal-big em { font-style: normal; font-size: 13px; color: var(--mute); }
+.grid100 { display: grid; grid-template-columns: repeat(10, 12px); gap: 3px; }
+.grid100 i { width: 12px; height: 12px; border-radius: 3px; background: var(--base-dot); opacity: 0.45; }
+.grid100 i.yes { background: var(--accent); opacity: 1; }
+.goal-ways-title { font-size: 15px; margin: 14px 0 6px; }
+.goal-ways { list-style: none; margin: 0; padding: 0; font-size: 14px; }
+.goal-ways li { display: grid; grid-template-columns: 1fr auto 64px; gap: 10px; align-items: center; padding: 7px 0; border-bottom: 1px dotted var(--line); }
+.goal-ways b { font-weight: 800; }
+.goal-ways em { font-style: normal; text-align: right; font-weight: 700; color: var(--mute); }
+@media (max-width: 520px) { .goal-result { grid-template-columns: 1fr; } }
+
+/* ── ② 한 번 더 살아보기 ── */
+.dice { font: inherit; font-size: 17px; font-weight: 800; padding: 14px 22px; border-radius: 14px; cursor: pointer; border: 0; background: var(--accent); color: #fff; box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 35%, transparent); }
+.dice:disabled { opacity: 0.55; cursor: default; }
+.dice:not(:disabled):active { transform: translateY(1px); }
+.count { margin-left: 10px; font-size: 13px; color: var(--mute); }
+.replay-body { margin-top: 14px; border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; background: var(--bg); }
+.replay-now { display: grid; grid-template-columns: auto 1fr auto; align-items: baseline; gap: 4px 12px; }
+.replay-no { grid-column: 1 / -1; font-size: 12px; color: var(--mute); }
+.replay-age { font-size: 28px; font-weight: 800; }
+.replay-nw { grid-column: 3; font-size: 24px; color: var(--accent); font-variant-numeric: tabular-nums; }
+.replay-bar { grid-column: 1 / -1; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; margin-top: 6px; }
+.replay-bar i { display: block; height: 100%; background: var(--accent); transition: width 0.3s linear; }
+.replay-lines { list-style: none; margin: 12px 0 0; padding: 0; font-size: 14px; }
+.replay-lines li { padding: 5px 0; border-bottom: 1px dotted var(--line); }
+.replay-lines li .age { display: inline-block; min-width: 40px; font-weight: 700; color: var(--mute); }
+.replay-lines li.crisis, .replay-lines li.jobLoss, .replay-lines li.startupClose { color: var(--bad); }
+.replay-lines li.boom { color: var(--good); }
+.replay-lines li.quiet { color: var(--mute); font-style: italic; }
+.pop { animation: pop 0.35s ease-out; }
+@keyframes pop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .pop { animation: none; } .replay-bar i { transition: none; } }
+.replay-end { margin: 12px 0 0; font-size: 15px; line-height: 1.6; }
+.replay-end b { color: var(--accent); }

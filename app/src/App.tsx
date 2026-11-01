@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { Allocation, Economy, Person, Scenario, ScenarioResult, Sex } from './engine/types';
+import type { Economy, Person, Scenario, ScenarioResult, Sex, SimOptions, Story } from './engine/types';
 import type { LuckChoice as LC } from './engine/decompose';
-import type { WorkerRequest } from './engine/worker';
+import type { Lever, WorkerRequest } from './engine/worker';
 import { FanChart } from './ui/FanChart';
 import { LuckChoice } from './ui/LuckChoice';
 import { EventTimeline } from './ui/EventTimeline';
@@ -10,17 +10,15 @@ import { Backtest } from './ui/Backtest';
 import { Sources, SourceTag } from './ui/Sources';
 import { Headline, HundredDots, ThreeLives, CompareChoices, LuckBar } from './ui/Story';
 import { ShareCard } from './ui/ShareCard';
+import { GoalOdds } from './ui/GoalOdds';
+import { ReplayLife } from './ui/ReplayLife';
 import { won, rankLabel } from './ui/format';
 import { incomePercentile, netWorthPercentile, defaults } from './data/params';
+import { PRESETS } from './data/presets';
 
 const COLORS = ['#2f6fdf', '#d9822b', '#b5389b'];
 
-const PRESETS: Record<string, { label: string; a: Allocation }> = {
-  safe: { label: '예금 위주', a: { deposit: 0.8, stock: 0.1, house: 0.1 } },
-  mid: { label: '골고루', a: { deposit: 0.4, stock: 0.3, house: 0.3 } },
-  home: { label: '집 위주', a: { deposit: 0.2, stock: 0.1, house: 0.7 } },
-  bold: { label: '주식 위주', a: { deposit: 0.2, stock: 0.7, house: 0.1 } },
-};
+
 
 const CHOICES = [
   { id: 'stay', label: '회사 계속', desc: '지금 직장에서 계속 일한다' },
@@ -28,7 +26,7 @@ const CHOICES = [
   { id: 'startup', label: '창업', desc: '내 사업을 시작한다 (5년 뒤 살아남는 곳은 약 37%)' },
 ] as const;
 
-type Out = { results: ScenarioResult[]; decomposition: LC };
+type Out = { results: ScenarioResult[]; decomposition: LC; levers: Lever[] };
 
 export default function App() {
   const [age, setAge] = useState(32);
@@ -65,13 +63,23 @@ export default function App() {
     [capital],
   );
 
+  const simOpt: SimOptions = useMemo(() => ({ runs: 1000, years, seed: 20261025, events: eventsOn, economy }), [years, eventsOn, economy]);
+
   const worker = useRef<Worker | null>(null);
   const reqId = useRef(0);
+  const lifeId = useRef(0);
+  const lifeWaiters = useRef(new Map<number, (s: Story) => void>());
   useEffect(() => {
     const w = new Worker(new URL('./engine/worker.ts', import.meta.url), { type: 'module' });
-    w.onmessage = (e: MessageEvent<Out & { id: number }>) => {
-      if (e.data.id !== reqId.current) return; // 오래된 응답 무시
-      setOut(e.data);
+    w.onmessage = (e: MessageEvent<(Out & { kind: 'run'; id: number }) | { kind: 'life'; id: number; story: Story }>) => {
+      const d = e.data;
+      if (d.kind === 'life') {
+        lifeWaiters.current.get(d.id)?.(d.story);
+        lifeWaiters.current.delete(d.id);
+        return;
+      }
+      if (d.id !== reqId.current) return; // 오래된 응답 무시
+      setOut(d);
       setBusy(false);
     };
     worker.current = w;
@@ -82,11 +90,21 @@ export default function App() {
     const t = setTimeout(() => {
       const id = ++reqId.current;
       setBusy(true);
-      const req: WorkerRequest = { id, person, scenarios, opt: { runs: 1000, years, seed: 20261025, events: eventsOn, economy } };
+      const req: WorkerRequest = { kind: 'run', id, person, scenarios, opt: simOpt, pick, preset };
       worker.current?.postMessage(req);
     }, 150);
     return () => clearTimeout(t);
-  }, [person, scenarios, years, eventsOn, economy]);
+  }, [person, scenarios, simOpt, pick, preset]);
+
+  /** 한 번 더 살아보기: i번째 인생 하나만 워커에 부탁한다 */
+  const requestLife = (index: number) =>
+    new Promise<Story>((resolve) => {
+      const id = ++lifeId.current;
+      lifeWaiters.current.set(id, resolve);
+      const scenario = scenarios.find((s) => s.id === pick) ?? scenarios[0];
+      const req: WorkerRequest = { kind: 'life', id, person, scenario, opt: simOpt, index };
+      worker.current?.postMessage(req);
+    });
 
   const incP = incomePercentile(age, income);
   const nwP = netWorthPercentile(age, netWorth);
@@ -260,6 +278,15 @@ export default function App() {
             {active.hundred && <HundredDots values={active.hundred} />}
             {active.stories && <ThreeLives stories={active.stories} startAge={age} scenarioLabel={active.scenario.label} />}
             <CompareChoices results={out.results} d={out.decomposition} activeId={pick} onPick={setPick} />
+            <GoalOdds results={out.results} levers={out.levers} activeId={pick} startAge={age} />
+            <ReplayLife
+              requestLife={requestLife}
+              runs={simOpt.runs}
+              startAge={age}
+              finalQuantiles={active.nwQuantiles![active.nwQuantiles!.length - 1]}
+              scenarioLabel={active.scenario.label}
+              resetKey={JSON.stringify([person, pick, simOpt])}
+            />
             <LuckBar d={out.decomposition} />
             <ShareCard person={person} results={out.results} activeId={pick} decomposition={out.decomposition} />
           </>

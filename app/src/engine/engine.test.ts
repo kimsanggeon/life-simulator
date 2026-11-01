@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createRng } from './rng';
 import { percentileFromAnchors, quantiles, valueFromAnchors } from './quantile';
-import { economyPath, simulateAll, simulateScenario } from './simulate';
+import { economyPath, shareAtLeast, simulateAll, simulateScenario, storyForPath } from './simulate';
 import { decomposeLuckChoice } from './decompose';
 import type { ModelParams, Person, Scenario } from './types';
 
@@ -272,5 +272,26 @@ describe('이야기용 대표 인생', () => {
     const r = simulateScenario(person, stay, params, opt);
     expect(r.hundred).toHaveLength(100);
     for (let k = 1; k < 100; k++) expect(r.hundred![k]).toBeGreaterThanOrEqual(r.hundred![k - 1]);
+  });
+});
+
+describe('목표 확률·한 번 더 살아보기', () => {
+  const opt = { runs: 1000, years: 15, seed: 21 };
+  it('storyForPath(i)는 1,000개 중 i번째 인생과 같은 결과', () => {
+    const r = simulateScenario(person, stay, params, opt);
+    for (const i of [0, 137, 999]) {
+      const s = storyForPath(person, stay, params, opt, i);
+      expect(s.netWorth[15]).toBeCloseTo(r.finalNetWorth[i], 6);
+    }
+  });
+  it('shareAtLeast: 분위 요약으로 계산한 비율이 실제 비율과 1%p 안', () => {
+    const r = simulateScenario(person, stay, params, opt);
+    const q = r.nwQuantiles![15];
+    for (const x of [r.netWorth[15].p10, r.netWorth[15].p50, r.netWorth[15].p90]) {
+      const actual = Array.from(r.finalNetWorth).filter((v) => v >= x).length / 1000;
+      expect(Math.abs(shareAtLeast(q, x) - actual)).toBeLessThan(0.01);
+    }
+    expect(shareAtLeast(q, -1e9)).toBe(1);
+    expect(shareAtLeast(q, 1e12)).toBe(0);
   });
 });
