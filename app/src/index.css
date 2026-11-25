@@ -303,3 +303,31 @@ table.bt tr.oos td { background: color-mix(in srgb, var(--accent) 7%, transparen
 @media (prefers-reduced-motion: reduce) { .pop { animation: none; } .replay-bar i { transition: none; } }
 .replay-end { margin: 12px 0 0; font-size: 15px; line-height: 1.6; }
 .replay-end b { color: var(--accent); }
+
+/* ── 내 돈 나눠 담기 ── */
+.lab { margin: 26px 0; border-top: 1px solid var(--line); padding-top: 18px; }
+.lab h3 { font-size: 18px; margin: 0 0 4px; }
+.lab-sliders { display: flex; flex-direction: column; gap: 6px; margin: 12px 0; }
+.lab-row { display: grid; grid-template-columns: 130px 1fr 46px; gap: 10px; align-items: center; font-size: 14px; }
+.lab-name { display: flex; align-items: center; gap: 6px; }
+.lab-name i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.lab-row input { width: 100%; accent-color: var(--accent); }
+.lab-row b { text-align: right; font-variant-numeric: tabular-nums; }
+.lab-stack { display: flex; height: 12px; border-radius: 6px; overflow: hidden; background: var(--line); margin-top: 6px; }
+.lab-stack i { display: block; height: 100%; transition: width 0.2s; }
+.lab-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+.lab-cards.busy { opacity: 0.55; transition: opacity 0.2s; }
+.lab-card { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; background: var(--bg); }
+.lab-card.mine { border: 2px solid var(--accent); }
+.lab-card h4 { margin: 0 0 4px; font-size: 15px; }
+.lab-card.mine h4 { color: var(--accent); }
+.lab-mid { margin: 0; font-size: 14px; }
+.lab-mid b { font-size: 22px; }
+.lab-range { margin: 2px 0 8px; font-size: 12px; color: var(--mute); }
+.lab-card dl { margin: 0; font-size: 12.5px; }
+.lab-card dt { color: var(--mute); margin-top: 6px; }
+.lab-card dd { margin: 0; font-weight: 700; }
+.lab-card dd small { font-weight: 400; color: var(--mute); }
+.lab-actions { margin: 12px 0 4px; }
+.lab-actions .primary { font: inherit; font-size: 15px; font-weight: 700; padding: 10px 18px; border-radius: 10px; cursor: pointer; border: 0; background: var(--accent); color: #fff; }
+@media (max-width: 520px) { .lab-row { grid-template-columns: 96px 1fr 40px; } }

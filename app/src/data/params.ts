@@ -276,6 +276,9 @@ export const history: History = {
   stock: historyRaw.years.map((r) => r.stock),
   house: historyRaw.years.map((r) => r.house),
   houseSeoul: historyRaw.years.map((r) => r.houseSeoul),
+  usStock: historyRaw.years.map((r) => r.usStock),
+  gold: historyRaw.years.map((r) => r.gold),
+  dollar: historyRaw.years.map((r) => r.dollar),
   jobLossMult: historyRaw.years.map((r) => r.unemployment / baseU),
   blockLen: num('econ.block_len'),
 };
@@ -285,6 +288,9 @@ export function buildParams(age = 35): ModelParams {
   const [dm, ds] = list('ret.deposit.real');
   const [sm, ss] = list('ret.stock.real');
   const [hm, hs] = list('ret.house.real');
+  const [um, us] = list('ret.usstock.real');
+  const [gm, gs] = list('ret.gold.real');
+  const [fm, fs] = list('ret.dollar.real');
   const [initMean, initSd] = list('startup.income.init');
   return {
     incomeGrowthAtAge,
@@ -293,6 +299,9 @@ export function buildParams(age = 35): ModelParams {
       deposit: { mean: dm / 100, sd: ds / 100 },
       stock: { mean: sm / 100, sd: ss / 100 },
       house: { mean: hm / 100, sd: hs / 100 },
+      usStock: { mean: um / 100, sd: us / 100 },
+      gold: { mean: gm / 100, sd: gs / 100 },
+      dollar: { mean: fm / 100, sd: fs / 100 },
     },
     debtRealRate: num('rate.debt.real') / 100,
     jobChange: jobChangeFor(age),

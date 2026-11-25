@@ -3,18 +3,50 @@ import { simulateAll, simulateScenario, storyForPath } from './simulate';
 import { decomposeLuckChoice } from './decompose';
 import { buildParams } from '../data/params';
 import { PRESETS } from '../data/presets';
-import type { Person, Scenario, SimOptions } from './types';
+import type { Allocation, Band, Person, Scenario, SimOptions } from './types';
 
 /** 고른 길에서 하나만 바꿔 본 결과 ('확률을 올리려면?' 비교용) */
 export type Lever = { id: string; label: string; nwQuantiles: number[][] };
 
+/** 조합 하나의 결과 요약: 보통·폭, 가장 나빴던 해, 큰 위기를 그대로 겪었을 때 */
+export type MixResult = {
+  id: string;
+  label: string;
+  end: Band;
+  worst: { p10: number; p50: number };
+  crisis: { from: number; p50: number; worst: number }[];
+};
+
 export type WorkerRequest =
   | { kind: 'run'; id: number; person: Person; scenarios: Scenario[]; opt: SimOptions; pick: string; preset: string }
-  | { kind: 'life'; id: number; person: Person; scenario: Scenario; opt: SimOptions; index: number };
+  | { kind: 'life'; id: number; person: Person; scenario: Scenario; opt: SimOptions; index: number }
+  | { kind: 'mixes'; id: number; person: Person; scenario: Scenario; opt: SimOptions; mixes: { id: string; label: string; a: Allocation }[] };
+
+const CRISES = [1997, 2008];
 
 self.onmessage = (e: MessageEvent<WorkerRequest>) => {
   const req = e.data;
   const params = buildParams(req.person.age);
+
+  if (req.kind === 'mixes') {
+    const T = req.opt.years;
+    const mixes: MixResult[] = req.mixes.map((m) => {
+      const p = { ...req.person, allocation: m.a };
+      const r = simulateScenario(p, req.scenario, params, req.opt);
+      return {
+        id: m.id,
+        label: m.label,
+        end: r.netWorth[T],
+        worst: r.worstYear!,
+        crisis: CRISES.map((from) => {
+          const c = simulateScenario(p, req.scenario, params, { ...req.opt, runs: 400, economy: { mode: 'replay', from } });
+          return { from, p50: c.netWorth[T].p50, worst: c.worstYear!.p50 };
+        }),
+      };
+    });
+    self.postMessage({ kind: 'mixes', id: req.id, mixes });
+    return;
+  }
 
   if (req.kind === 'life') {
     const story = storyForPath(req.person, req.scenario, params, req.opt, req.index);

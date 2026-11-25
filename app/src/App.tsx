@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { Economy, Person, Scenario, ScenarioResult, Sex, SimOptions, Story } from './engine/types';
+import type { Allocation, Economy, Person, Scenario, ScenarioResult, Sex, SimOptions, Story } from './engine/types';
 import type { LuckChoice as LC } from './engine/decompose';
-import type { Lever, WorkerRequest } from './engine/worker';
+import type { Lever, MixResult, WorkerRequest } from './engine/worker';
 import { FanChart } from './ui/FanChart';
 import { LuckChoice } from './ui/LuckChoice';
 import { EventTimeline } from './ui/EventTimeline';
@@ -12,6 +12,7 @@ import { Headline, HundredDots, ThreeLives, CompareChoices, LuckBar } from './ui
 import { ShareCard } from './ui/ShareCard';
 import { GoalOdds } from './ui/GoalOdds';
 import { ReplayLife } from './ui/ReplayLife';
+import { PortfolioLab } from './ui/PortfolioLab';
 import { won, rankLabel } from './ui/format';
 import { incomePercentile, netWorthPercentile, defaults } from './data/params';
 import { PRESETS } from './data/presets';
@@ -34,6 +35,7 @@ export default function App() {
   const [netWorth, setNetWorth] = useState(defaults.netWorth(32));
   const [savingsRate, setSavingsRate] = useState(defaults.savingsRate);
   const [preset, setPreset] = useState('mid');
+  const [customAlloc, setCustomAlloc] = useState<Allocation | null>(null);
   const [sex, setSex] = useState<Sex>('M');
   const [married, setMarried] = useState(false);
   const [children, setChildren] = useState(0);
@@ -50,8 +52,8 @@ export default function App() {
   const [busy, setBusy] = useState(false);
 
   const person: Person = useMemo(
-    () => ({ age, income, netWorth, savingsRate, allocation: PRESETS[preset].a, sex, married, children: married ? children : 0 }),
-    [age, income, netWorth, savingsRate, preset, sex, married, children],
+    () => ({ age, income, netWorth, savingsRate, allocation: preset === 'custom' && customAlloc ? customAlloc : (PRESETS[preset] ?? PRESETS.mid).a, sex, married, children: married ? children : 0 }),
+    [age, income, netWorth, savingsRate, preset, customAlloc, sex, married, children],
   );
   // 세 갈래는 항상 함께 계산한다 (비교용). 고른 길은 결과 화면의 주인공일 뿐.
   const scenarios: Scenario[] = useMemo(
@@ -68,14 +70,17 @@ export default function App() {
   const worker = useRef<Worker | null>(null);
   const reqId = useRef(0);
   const lifeId = useRef(0);
-  const lifeWaiters = useRef(new Map<number, (s: Story) => void>());
+  const waiters = useRef(new Map<number, (v: never) => void>());
   useEffect(() => {
     const w = new Worker(new URL('./engine/worker.ts', import.meta.url), { type: 'module' });
-    w.onmessage = (e: MessageEvent<(Out & { kind: 'run'; id: number }) | { kind: 'life'; id: number; story: Story }>) => {
+    w.onmessage = (
+      e: MessageEvent<(Out & { kind: 'run'; id: number }) | { kind: 'life'; id: number; story: Story } | { kind: 'mixes'; id: number; mixes: MixResult[] }>,
+    ) => {
       const d = e.data;
-      if (d.kind === 'life') {
-        lifeWaiters.current.get(d.id)?.(d.story);
-        lifeWaiters.current.delete(d.id);
+      if (d.kind === 'life' || d.kind === 'mixes') {
+        const done = waiters.current.get(d.id) as ((v: Story | MixResult[]) => void) | undefined;
+        done?.(d.kind === 'life' ? d.story : d.mixes);
+        waiters.current.delete(d.id);
         return;
       }
       if (d.id !== reqId.current) return; // 오래된 응답 무시
@@ -97,14 +102,17 @@ export default function App() {
   }, [person, scenarios, simOpt, pick, preset]);
 
   /** 한 번 더 살아보기: i번째 인생 하나만 워커에 부탁한다 */
-  const requestLife = (index: number) =>
-    new Promise<Story>((resolve) => {
+  const ask = <T,>(make: (id: number) => WorkerRequest) =>
+    new Promise<T>((resolve) => {
       const id = ++lifeId.current;
-      lifeWaiters.current.set(id, resolve);
-      const scenario = scenarios.find((s) => s.id === pick) ?? scenarios[0];
-      const req: WorkerRequest = { kind: 'life', id, person, scenario, opt: simOpt, index };
-      worker.current?.postMessage(req);
+      waiters.current.set(id, resolve as (v: never) => void);
+      worker.current?.postMessage(make(id));
     });
+  const pickedScenario = scenarios.find((s) => s.id === pick) ?? scenarios[0];
+  const requestLife = (index: number) => ask<Story>((id) => ({ kind: 'life', id, person, scenario: pickedScenario, opt: simOpt, index }));
+  /** 내 돈 나눠 담기: 조합 여러 개를 한 번에 계산 */
+  const requestMixes = (mixes: { id: string; label: string; a: Allocation }[]) =>
+    ask<MixResult[]>((id) => ({ kind: 'mixes', id, person, scenario: pickedScenario, opt: simOpt, mixes }));
 
   const incP = incomePercentile(age, income);
   const nwP = netWorthPercentile(age, netWorth);
@@ -206,6 +214,7 @@ export default function App() {
             <div className="field">
               <span>모은 돈을 주로 어디에?</span>
               <div className="seg small">
+                {preset === 'custom' && <button className="on">직접 만든 조합</button>}
                 {Object.entries(PRESETS).map(([k, v]) => (
                   <button key={k} className={preset === k ? 'on' : ''} onClick={() => setPreset(k)}>
                     {v.label}
@@ -278,6 +287,17 @@ export default function App() {
             {active.hundred && <HundredDots values={active.hundred} />}
             {active.stories && <ThreeLives stories={active.stories} startAge={age} scenarioLabel={active.scenario.label} />}
             <CompareChoices results={out.results} d={out.decomposition} activeId={pick} onPick={setPick} />
+            <PortfolioLab
+              requestMixes={requestMixes}
+              initial={person.allocation}
+              onUse={(a) => {
+                setCustomAlloc(a);
+                setPreset('custom');
+                document.querySelector('.headline')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+              endAge={endAge}
+              resetKey={JSON.stringify([age, income, netWorth, savingsRate, sex, married, children, pick, simOpt])}
+            />
             <GoalOdds results={out.results} levers={out.levers} activeId={pick} startAge={age} />
             <ReplayLife
               requestLife={requestLife}

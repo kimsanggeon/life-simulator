@@ -12,6 +12,9 @@ const params: ModelParams = {
     deposit: { mean: 0.01, sd: 0.01 },
     stock: { mean: 0.05, sd: 0.2 },
     house: { mean: 0.02, sd: 0.08 },
+    usStock: { mean: 0.05, sd: 0.2 },
+    gold: { mean: 0.03, sd: 0.15 },
+    dollar: { mean: 0.01, sd: 0.1 },
   },
   debtRealRate: 0.04,
   jobChange: { jumpMean: 0.05, jumpSd: 0.1 },
@@ -110,6 +113,9 @@ describe('simulate', () => {
         deposit: { mean: 0.01, sd: 0 },
         stock: { mean: 0.05, sd: 0 },
         house: { mean: 0.02, sd: 0 },
+        usStock: { mean: 0.05, sd: 0 },
+        gold: { mean: 0.03, sd: 0 },
+        dollar: { mean: 0.01, sd: 0 },
       },
     };
     const r = simulateScenario(person, stay, det, opt);
@@ -293,5 +299,40 @@ describe('목표 확률·한 번 더 살아보기', () => {
     }
     expect(shareAtLeast(q, -1e9)).toBe(1);
     expect(shareAtLeast(q, 1e12)).toBe(0);
+  });
+});
+
+describe('투자 대상 넓히기 (미국 주식·금·달러)', () => {
+  // 가짜 과거 4년: 2년째에 국내 주식 폭락, 그 해 달러는 급등
+  const H = {
+    year: [2000, 2001, 2002, 2003],
+    deposit: [0, 0, 0, 0],
+    stock: [0.1, -0.5, 0.1, 0.1],
+    house: [0, 0, 0, 0],
+    usStock: [0.1, 0.1, 0.1, 0.1],
+    gold: [0, 0.3, 0, 0],
+    dollar: [0, 0.5, 0, 0],
+    jobLossMult: [1, 1, 1, 1],
+    blockLen: 4,
+  };
+  const quiet: ModelParams = { ...params, incomeShockSd: 0, events: { ...params.events, marriageHazard: () => 0, jobLossHazard: () => 0 }, history: H };
+  const p0 = { ...person, savingsRate: 0, income: 1 };
+  const replay = { runs: 50, years: 4, seed: 1, events: false, economy: { mode: 'replay' as const, from: 2000 } };
+
+  it('달러 100%: 2001년 +50%가 그대로 반영', () => {
+    const r = simulateScenario({ ...p0, allocation: { deposit: 0, stock: 0, house: 0, dollar: 1 } }, stay, quiet, replay);
+    expect(r.netWorth[2].p50 / r.netWorth[1].p50).toBeCloseTo(1.5, 2);
+  });
+
+  it('가장 나빴던 해: 국내 주식만이면 −50%, 주식 반 + 달러 반이면 0%까지 줄어듦', () => {
+    const k = simulateScenario({ ...p0, allocation: { deposit: 0, stock: 1, house: 0 } }, stay, quiet, replay);
+    const mix = simulateScenario({ ...p0, allocation: { deposit: 0, stock: 0.5, house: 0, dollar: 0.5 } }, stay, quiet, replay);
+    expect(k.worstYear!.p50).toBeCloseTo(-0.5, 6);
+    expect(mix.worstYear!.p50).toBeCloseTo(0, 6);
+  });
+
+  it('미국 주식·금 비중도 계산에 들어간다', () => {
+    const r = simulateScenario({ ...p0, allocation: { deposit: 0, stock: 0, house: 0, usStock: 0.5, gold: 0.5 } }, stay, quiet, replay);
+    expect(r.netWorth[4].p50 / r.netWorth[0].p50).toBeCloseTo(1.05 * 1.2 * 1.05 * 1.05, 4);
   });
 });

@@ -1,7 +1,15 @@
 // 엔진 입출력 타입. 금액 단위는 모두 '만원', 실질(기준연도 물가) 가치.
 
 /** 합 = 1. houseSeoul: 서울 아파트 (과거 재생 때 KB 서울 지수, 없으면 전국과 같게) */
-export type Allocation = { deposit: number; stock: number; house: number; houseSeoul?: number };
+export type Allocation = {
+  deposit: number;
+  stock: number; // 국내 주식 (KOSPI)
+  house: number; // 전국 아파트
+  houseSeoul?: number; // 서울 아파트
+  usStock?: number; // 미국 주식 (원화 환산)
+  gold?: number; // 금 (원화 환산)
+  dollar?: number; // 달러 예금 (원화 환산, 미국 금리 포함)
+};
 
 export type Person = {
   age: number; // 현재 만 나이
@@ -77,7 +85,7 @@ export type ModelParams = {
   incomeGrowthAtAge: (age: number) => number;
   /** 개인 소득의 연간 영구충격 표준편차 (로그) */
   incomeShockSd: number;
-  returns: { deposit: ReturnParam; stock: ReturnParam; house: ReturnParam };
+  returns: { deposit: ReturnParam; stock: ReturnParam; house: ReturnParam; usStock: ReturnParam; gold: ReturnParam; dollar: ReturnParam };
   /** 순자산이 음수일 때(부채) 적용하는 실질 이자율 */
   debtRealRate: number;
   jobChange: { jumpMean: number; jumpSd: number };
@@ -106,6 +114,9 @@ export type History = {
   house: number[];
   /** KB 아파트(서울) 실질 상승률 */
   houseSeoul?: number[];
+  usStock?: number[];
+  gold?: number[];
+  dollar?: number[];
   /** 그 해 실업률 ÷ 기준연도 실업률: 실직 확률에 곱한다 */
   jobLossMult: number[];
   /** 한 번에 이어서 뽑는 연도 수 (위기가 몇 년씩 이어지는 모양을 보존) */
@@ -126,6 +137,8 @@ export type ScenarioResult = {
   finalNetWorth: Float64Array; // 경로별 마지막 해 순자산 (경로 i는 모든 시나리오에서 같은 운)
   /** 창업 시나리오: 마지막 해까지 사업을 유지한 비율 */
   startupAliveShare?: number;
+  /** 경로마다 '모은 돈이 가장 많이 줄었던 해의 수익률' → 그 분포 (p50 = 보통, p10 = 운 나쁠 때) */
+  worstYear?: { p10: number; p50: number };
   /** 하위 10% 경로에 각 과거 연도가 나온 빈도 ÷ 전체 경로에서의 빈도 (1보다 크면 나쁜 인생에 자주 낀 해) */
   badYears?: { year: number; lift: number }[];
   events?: EventShares;

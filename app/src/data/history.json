@@ -1,5 +1,5 @@
 {
- "_note": "ECOS 원자료(data/raw/ecos_1995_2025.json)로 계산한 연도별 실질 수익률. 주식 = (종가 변화 + 배당수익률) 실질, 1996~2000 배당은 2001~2025 평균으로 채움. 주택 = KB 아파트(전국) 12월→12월 실질. 예금 = 저축성수신 신규금리 실질. 서울 주택 = KB 아파트(서울) 12월→12월 실질.",
+ "_note": "ECOS 원자료(data/raw/ecos_1995_2025.json)로 계산한 연도별 실질 수익률. 주식 = (종가 변화 + 배당수익률) 실질, 1996~2000 배당은 2001~2025 평균으로 채움. 주택 = KB 아파트(전국) 12월→12월 실질. 예금 = 저축성수신 신규금리 실질. 서울 주택 = KB 아파트(서울) 12월→12월 실질. 달러 = 원/달러 12월 말일 환율 변화 × (1 + 그 해 미국 정책금리 평균) 실질. 미국 주식 = 미국 주가지수(902Y002, 배당 제외) × 환율 변화 실질. 금 = 국제 금값(902Y003) × 환율 변화 실질.",
  "divYieldImputed": 1.653,
  "years": [
   {
@@ -11,7 +11,10 @@
    "unemployment": 2.058,
    "gdp": 8.0,
    "divImputed": true,
-   "houseSeoul": -0.00691
+   "houseSeoul": -0.00691,
+   "dollar": 0.0926,
+   "usStock": 0.23933,
+   "gold": -0.01167
   },
   {
    "year": 1997,
@@ -22,7 +25,10 @@
    "unemployment": 2.617,
    "gdp": 6.3,
    "divImputed": true,
-   "houseSeoul": 0.00715
+   "houseSeoul": 0.00715,
+   "dollar": 1.02572,
+   "usStock": 1.47536,
+   "gold": 0.49732
   },
   {
    "year": 1998,
@@ -33,7 +39,10 @@
    "unemployment": 6.95,
    "gdp": -4.9,
    "divImputed": true,
-   "houseSeoul": -0.20567
+   "houseSeoul": -0.20567,
+   "dollar": -0.30422,
+   "usStock": -0.24682,
+   "gold": -0.32999
   },
   {
    "year": 1999,
@@ -44,7 +53,10 @@
    "unemployment": 6.583,
    "gdp": 11.6,
    "divImputed": true,
-   "houseSeoul": 0.11589
+   "houseSeoul": 0.11589,
+   "dollar": -0.01517,
+   "usStock": 0.03954,
+   "gold": -0.0905
   },
   {
    "year": 2000,
@@ -55,7 +67,10 @@
    "unemployment": 4.425,
    "gdp": 9.2,
    "divImputed": true,
-   "houseSeoul": 0.01881
+   "houseSeoul": 0.01881,
+   "dollar": 0.15475,
+   "usStock": 0.09865,
+   "gold": 0.04245
   },
   {
    "year": 2001,
@@ -66,7 +81,10 @@
    "unemployment": 4.0,
    "gdp": 4.7,
    "divImputed": false,
-   "houseSeoul": 0.14661
+   "houseSeoul": 0.14661,
+   "dollar": 0.03538,
+   "usStock": -0.09869,
+   "gold": 0.0143
   },
   {
    "year": 2002,
@@ -77,7 +95,10 @@
    "unemployment": 3.258,
    "gdp": 7.7,
    "divImputed": false,
-   "houseSeoul": 0.2727
+   "houseSeoul": 0.2727,
+   "dollar": -0.10654,
+   "usStock": -0.27654,
+   "gold": 0.05786
   },
   {
    "year": 2003,
@@ -88,7 +109,10 @@
    "unemployment": 3.55,
    "gdp": 3.1,
    "divImputed": false,
-   "houseSeoul": 0.06442
+   "houseSeoul": 0.06442,
+   "dollar": -0.01802,
+   "usStock": 0.19618,
+   "gold": 0.19037
   },
   {
    "year": 2004,
@@ -99,7 +123,10 @@
    "unemployment": 3.658,
    "gdp": 5.2,
    "divImputed": false,
-   "houseSeoul": -0.0445
+   "houseSeoul": -0.0445,
+   "dollar": -0.15045,
+   "usStock": -0.04327,
+   "gold": -0.08982
   },
   {
    "year": 2005,
@@ -110,7 +137,10 @@
    "unemployment": 3.75,
    "gdp": 4.4,
    "divImputed": false,
-   "houseSeoul": 0.06155
+   "houseSeoul": 0.06155,
+   "dollar": -0.01799,
+   "usStock": 0.03937,
+   "gold": 0.09743
   },
   {
    "year": 2006,
@@ -121,7 +151,10 @@
    "unemployment": 3.475,
    "gdp": 5.2,
    "divImputed": false,
-   "houseSeoul": 0.21393
+   "houseSeoul": 0.21393,
+   "dollar": -0.05588,
+   "usStock": 0.048,
+   "gold": 0.10993
   },
   {
    "year": 2007,
@@ -132,7 +165,10 @@
    "unemployment": 3.258,
    "gdp": 5.8,
    "divImputed": false,
-   "houseSeoul": 0.01005
+   "houseSeoul": 0.01005,
+   "dollar": 0.03097,
+   "usStock": 0.06034,
+   "gold": 0.25224
   },
   {
    "year": 2008,
@@ -143,7 +179,10 @@
    "unemployment": 3.175,
    "gdp": 3.0,
    "divImputed": false,
-   "houseSeoul": -0.01392
+   "houseSeoul": -0.01392,
+   "dollar": 0.30937,
+   "usStock": -0.27688,
+   "gold": 0.30603
   },
   {
    "year": 2009,
@@ -154,7 +193,10 @@
    "unemployment": 3.633,
    "gdp": 0.8,
    "divImputed": false,
-   "houseSeoul": -0.00176
+   "houseSeoul": -0.00176,
+   "dollar": -0.0991,
+   "usStock": 0.16954,
+   "gold": 0.25109
   },
   {
    "year": 2010,
@@ -165,7 +207,10 @@
    "unemployment": 3.708,
    "gdp": 7.0,
    "divImputed": false,
-   "houseSeoul": -0.04986
+   "houseSeoul": -0.04986,
+   "dollar": -0.05215,
+   "usStock": 0.034,
+   "gold": 0.16009
   },
   {
    "year": 2011,
@@ -176,7 +221,10 @@
    "unemployment": 3.408,
    "gdp": 3.7,
    "divImputed": false,
-   "houseSeoul": -0.04294
+   "houseSeoul": -0.04294,
+   "dollar": -0.02308,
+   "usStock": -0.07747,
+   "gold": 0.15937
   },
   {
    "year": 2012,
@@ -187,7 +235,10 @@
    "unemployment": 3.225,
    "gdp": 2.5,
    "divImputed": false,
-   "houseSeoul": -0.06523
+   "houseSeoul": -0.06523,
+   "dollar": -0.08925,
+   "usStock": 0.02757,
+   "gold": -0.07045
   },
   {
    "year": 2013,
@@ -198,7 +249,10 @@
    "unemployment": 3.1,
    "gdp": 3.3,
    "divImputed": false,
-   "houseSeoul": -0.03098
+   "houseSeoul": -0.03098,
+   "dollar": -0.02565,
+   "usStock": 0.18042,
+   "gold": -0.29378
   },
   {
    "year": 2014,
@@ -209,7 +263,10 @@
    "unemployment": 3.492,
    "gdp": 3.2,
    "divImputed": false,
-   "houseSeoul": -0.00183
+   "houseSeoul": -0.00183,
+   "dollar": 0.02977,
+   "usStock": 0.09661,
+   "gold": 0.00908
   },
   {
    "year": 2015,
@@ -220,7 +277,10 @@
    "unemployment": 3.592,
    "gdp": 2.9,
    "divImputed": false,
-   "houseSeoul": 0.04821
+   "houseSeoul": 0.04821,
+   "dollar": 0.06066,
+   "usStock": -0.00147,
+   "gold": -0.05897
   },
   {
    "year": 2016,
@@ -231,7 +291,10 @@
    "unemployment": 3.675,
    "gdp": 3.2,
    "divImputed": false,
-   "houseSeoul": 0.03218
+   "houseSeoul": 0.03218,
+   "dollar": 0.02414,
+   "usStock": 0.10761,
+   "gold": 0.09951
   },
   {
    "year": 2017,
@@ -242,7 +305,10 @@
    "unemployment": 3.683,
    "gdp": 3.4,
    "divImputed": false,
-   "houseSeoul": 0.03271
+   "houseSeoul": 0.03271,
+   "dollar": -0.12181,
+   "usStock": -0.00318,
+   "gold": -0.04755
   },
   {
    "year": 2018,
@@ -253,7 +319,10 @@
    "unemployment": 3.833,
    "gdp": 3.2,
    "divImputed": false,
-   "houseSeoul": 0.11908
+   "houseSeoul": 0.11908,
+   "dollar": 0.0459,
+   "usStock": -0.06097,
+   "gold": 0.0162
   },
   {
    "year": 2019,
@@ -264,7 +333,10 @@
    "unemployment": 3.783,
    "gdp": 2.3,
    "divImputed": false,
-   "houseSeoul": 0.02495
+   "houseSeoul": 0.02495,
+   "dollar": 0.05446,
+   "usStock": 0.21947,
+   "gold": 0.22126
   },
   {
    "year": 2020,
@@ -275,7 +347,10 @@
    "unemployment": 3.942,
    "gdp": -0.7,
    "divImputed": false,
-   "houseSeoul": 0.1246
+   "houseSeoul": 0.1246,
+   "dollar": -0.06213,
+   "usStock": -0.02128,
+   "gold": 0.17486
   },
   {
    "year": 2021,
@@ -286,7 +361,10 @@
    "unemployment": 3.675,
    "gdp": 4.7,
    "divImputed": false,
-   "houseSeoul": 0.13558
+   "houseSeoul": 0.13558,
+   "dollar": 0.069,
+   "usStock": 0.24772,
+   "gold": 0.02779
   },
   {
    "year": 2022,
@@ -297,7 +375,10 @@
    "unemployment": 2.883,
    "gdp": 2.9,
    "divImputed": false,
-   "houseSeoul": -0.07667
+   "houseSeoul": -0.07667,
+   "dollar": 0.03132,
+   "usStock": -0.07859,
+   "gold": 0.01823
   },
   {
    "year": 2023,
@@ -308,7 +389,10 @@
    "unemployment": 2.708,
    "gdp": 1.5,
    "divImputed": false,
-   "houseSeoul": -0.09534
+   "houseSeoul": -0.09534,
+   "dollar": 0.03345,
+   "usStock": 0.0636,
+   "gold": 0.11307
   },
   {
    "year": 2024,
@@ -319,7 +403,10 @@
    "unemployment": 2.8,
    "gdp": 2.2,
    "divImputed": false,
-   "houseSeoul": 0.0051
+   "houseSeoul": 0.0051,
+   "dollar": 0.17481,
+   "usStock": 0.32361,
+   "gold": 0.45004
   },
   {
    "year": 2025,
@@ -330,7 +417,10 @@
    "unemployment": 2.792,
    "gdp": 1.1,
    "divImputed": false,
-   "houseSeoul": 0.08939
+   "houseSeoul": 0.08939,
+   "dollar": -0.00285,
+   "usStock": 0.07213,
+   "gold": 0.56325
   }
  ]
 }

@@ -4,7 +4,7 @@ export function won(man: number): string {
   const a = Math.abs(man);
   if (a >= 10000) {
     const eok = a / 10000;
-    return `${sign}${eok >= 10 ? Math.round(eok) : eok.toFixed(1)}억`;
+    return `${sign}${eok >= 9.95 ? Math.round(eok) : eok.toFixed(1)}억`;
   }
   if (a >= 1000) return `${sign}${(Math.round(a / 100) * 100).toLocaleString('ko-KR')}만`;
   return `${sign}${Math.round(a / 10) * 10}만`;

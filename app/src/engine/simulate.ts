@@ -46,6 +46,8 @@ type PathOut = {
   firstJobLoss: number;
   dual: Uint8Array;
   yearIdx: Int32Array | null;
+  /** 모은 돈의 연 수익률이 가장 나빴던 해 (빚이 없던 해만) */
+  worstR: number;
 };
 
 export function simulatePath(
@@ -88,6 +90,7 @@ export function simulatePath(
   const E = params.events;
   let married = person.married;
   let children = person.children;
+  let worstR = 0;
   const kidAges: number[] = Array.from({ length: person.children }, (_, k) => E.existingChildAge + 3 * k);
   let firstMarriage = 0;
   let firstChild = 0;
@@ -118,6 +121,9 @@ export function simulatePath(
     const zDep = market.normal();
     const zStk = market.normal();
     const zHou = market.normal();
+    const zUs = market.normal();
+    const zAu = market.normal();
+    const zFx = market.normal();
     const hy = yearIdx ? yearIdx[t - 1] : -1;
     const jobMult = H ? H.jobLossMult[hy] : 1;
     // ── 개인 운 ──
@@ -211,10 +217,17 @@ export function simulatePath(
           ? w.deposit * H.deposit[hy] +
             w.stock * H.stock[hy] +
             w.house * H.house[hy] +
-            (w.houseSeoul ?? 0) * (H.houseSeoul ? H.houseSeoul[hy] : H.house[hy])
+            (w.houseSeoul ?? 0) * (H.houseSeoul ? H.houseSeoul[hy] : H.house[hy]) +
+            (w.usStock ?? 0) * (H.usStock ? H.usStock[hy] : H.stock[hy]) +
+            (w.gold ?? 0) * (H.gold ? H.gold[hy] : H.deposit[hy]) +
+            (w.dollar ?? 0) * (H.dollar ? H.dollar[hy] : H.deposit[hy])
           : w.deposit * (R.deposit.mean + R.deposit.sd * zDep) +
             w.stock * (R.stock.mean + R.stock.sd * zStk) +
-            (w.house + (w.houseSeoul ?? 0)) * (R.house.mean + R.house.sd * zHou);
+            (w.house + (w.houseSeoul ?? 0)) * (R.house.mean + R.house.sd * zHou) +
+            (w.usStock ?? 0) * (R.usStock.mean + R.usStock.sd * zUs) +
+            (w.gold ?? 0) * (R.gold.mean + R.gold.sd * zAu) +
+            (w.dollar ?? 0) * (R.dollar.mean + R.dollar.sd * zFx);
+    if (W >= 0 && r < worstR) worstR = r;
 
     spNormal = Math.max(spNormal, spIncome);
     W = W * (1 + r) + income + spIncome - (normalIncome + spNormal) * (1 - person.savingsRate) - spend;
@@ -222,7 +235,7 @@ export function simulatePath(
     inc[t] = income;
   }
 
-  return { netWorth: nw, income: inc, startupAlive: inBusiness, firstMarriage, firstChild, firstJobLoss, dual, yearIdx };
+  return { netWorth: nw, income: inc, startupAlive: inBusiness, firstMarriage, firstChild, firstJobLoss, dual, yearIdx, worstR };
 }
 
 /**
@@ -323,6 +336,7 @@ export function simulateScenario(
   const incByYear = Array.from({ length: years + 1 }, () => new Float64Array(runs));
   const finalNetWorth = new Float64Array(runs);
   let alive = 0;
+  const worst = new Float64Array(runs);
   const useEvents = opt.events ?? true;
   const economy: Economy = params.history ? (opt.economy ?? { mode: 'history' }) : { mode: 'normal' };
   const yearSeqs: (Int32Array | undefined)[] = new Array(runs);
@@ -345,6 +359,7 @@ export function simulateScenario(
       economy,
     );
     if (out.yearIdx) yearSeqs[i] = out.yearIdx;
+    worst[i] = out.worstR;
     for (let t = 0; t <= years; t++) {
       if (person.married || (out.firstMarriage && out.firstMarriage <= t)) cnt.married[t]++;
       if (out.firstChild && out.firstChild <= t) cnt.child[t]++;
@@ -378,6 +393,10 @@ export function simulateScenario(
     income: incByYear.map((a) => band(a.sort())),
     finalNetWorth,
     startupAliveShare: scenario.kind === 'startup' ? alive / runs : undefined,
+    worstYear: (() => {
+      worst.sort();
+      return { p10: quantileSorted(worst, 0.1), p50: quantileSorted(worst, 0.5) };
+    })(),
     badYears: economy.mode === 'history' && params.history ? badYearLift(params.history, yearSeqs, finalNetWorth) : undefined,
     events: useEvents
       ? { married: cnt.married.map((c) => c / runs), child: cnt.child.map((c) => c / runs), jobLoss: cnt.jobLoss.map((c) => c / runs), dualIncome: cnt.dual.map((c) => c / runs) }

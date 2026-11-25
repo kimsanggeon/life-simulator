@@ -1395,5 +1395,49 @@
   "url": "https://kosis.kr/statHtml/statHtml.do?orgId=101&tblId=DT_1HDAAA01",
   "status": "VERIFIED",
   "note": "수도권 +78%, 비수도권 +48%. 공개 표는 수도권·비수도권 두 권역뿐이라 서울을 따로 볼 수 없음."
+ },
+ {
+  "key": "econ.fx_gold_us",
+  "label": "과거 연도별 원/달러 환율·미국 주가·국제 금값·미국 금리 (1995~2025)",
+  "value": "매년 12월 값",
+  "unit": "",
+  "source": "한국은행 ECOS — 731Y006 원/달러 종가 말일, 902Y002 국제 주요국 주가지수(미국), 902Y003 국제상품가격(금), 902Y006 주요국 정책금리(미국)",
+  "year": 2025,
+  "url": "https://ecos.bok.or.kr/",
+  "status": "VERIFIED",
+  "note": "원자료: data/raw/ecos_1995_2025.json. 받는 도구: data/scripts/ecos.py"
+ },
+ {
+  "key": "ret.usstock.real",
+  "label": "미국 주식(원화 환산) 실질수익률 (평균, 표준편차)",
+  "value": "8.5, 29.6",
+  "unit": "%/년",
+  "source": "ECOS 미국 주가지수 × 원/달러 환율 ÷ 소비자물가, 1996~2025",
+  "year": 2025,
+  "url": "https://ecos.bok.or.kr/",
+  "status": "DERIVED",
+  "note": "배당 제외라 실제보다 연 2% 안팎 낮을 수 있음. 정규분포 모드에서만 평균·표준편차를 쓰고, 기본 모드는 연도별 실제 값."
+ },
+ {
+  "key": "ret.gold.real",
+  "label": "금(원화 환산) 실질수익률 (평균, 표준편차)",
+  "value": "9.5, 19.7",
+  "unit": "%/년",
+  "source": "ECOS 국제 금값(달러/트로이온스) × 원/달러 환율 ÷ 소비자물가, 1996~2025",
+  "year": 2025,
+  "url": "https://ecos.bok.or.kr/",
+  "status": "DERIVED",
+  "note": "보관·거래 비용 제외."
+ },
+ {
+  "key": "ret.dollar.real",
+  "label": "달러 예금(원화 환산) 실질수익률 (평균, 표준편차)",
+  "value": "3.4, 21.3",
+  "unit": "%/년",
+  "source": "ECOS 원/달러 환율 변화 × (1 + 미국 정책금리 연평균) ÷ 소비자물가, 1996~2025",
+  "year": 2025,
+  "url": "https://ecos.bok.or.kr/",
+  "status": "DERIVED",
+  "note": "달러 예금 이자를 미국 정책금리로 근사(실제 외화예금 금리는 더 낮을 수 있음). 환전 수수료 제외."
  }
 ]
